@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Localization",
   "type": "module",
-  "main": "src/_Module.ts",
+  "main": "src/library.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
