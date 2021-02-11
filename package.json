@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Localization",
   "type": "module",
-  "main": "src/library.js",
+  "main": "src/_Module.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,12 +15,11 @@
     "l10n",
     "i18n"
   ],
-  "author": "hydroper",
+  "author": "Klaider",
   "repository": "https://github.com/recoyx/Localization",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.0",
-    "com.recoyxgroup.javascript.enum": "^1.0.0",
     "country-iso-2-to-3": "^1.1.0",
     "country-name": "^0.4.0",
     "event-target-shim": "^5.0.1",
@@ -28,6 +27,6 @@
     "language-tags": "^1.0.5"
   },
   "browser": {
-    "src/FSLoaderForNodeJS.js": "src/FSLoaderForBrowser.js"
+    "src/FSLoader4NodeJS.ts": "src/FSLoader4Browser.ts"
   }
 }

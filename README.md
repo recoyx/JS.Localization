@@ -3,18 +3,18 @@
 String localization in JavaScript.
 
 Features:
-- Supports loading text resources from HTTP (Web Browser and Node.js) and file system (Node.js).
+- Supports loading text resources from HTTP (Web Browser and Node.js) and File System (Node.js).
 - Basic language information and settings
 
 Lacking:
-- Not all Locales have a Region associated. You can contribute to this by simply adding a second argument to the data entries at [Locale.js](https://github.com/recoyx/Localization/blob/master/src/Locale.js).
+- Not all `Locale`s have a` Region` associated. You can contribute to this by simply adding a second argument to the data entries at [Locale.js](https://github.com/recoyx/Localization/blob/master/src/Locale.js).
 
 ## Examples
 
 ```javascript
 import Intl from 'com.recoyxgroup.localization';
 
-const localeDictionary = new Intl.Dictionary({
+const localeMap = new Intl.ReplacementMap({
     // Set of supported Locales.
     // NOTE that the strings here indicate where
     // the assets are located.
@@ -36,14 +36,10 @@ const localeDictionary = new Intl.Dictionary({
         loaderType: 'fileSystem',
     },
 });
-
 const { Gender } = Intl;
-
 (async () => {
-    await localeDictionary.setLocale('en-US');
-
-    const t = localeDictionary.t.bind(localeDictionary);
-
+    await localeMap.setLocale('en-US');
+    const t = localeMap.t.bind(localeLocaleMap);
     console.log(t('common.messageId'));
     console.log(t('common.parameterized', { x: 'foo' }));
     console.log(t('common.contextual', Gender.MALE));
@@ -83,9 +79,9 @@ Identifies language codes and provides basic language properties. Only language 
 
 Returns the Locale native name. The result includes the region name.
 
-###### `[object Locale].side`
+###### `[object Locale].direction`
 
-Returns the side from which the Locale starts being read.
+Returns the Locale reader direction.
 
 - Type: [`LocaleDirection`](#languageside)
 
@@ -135,50 +131,50 @@ Represents gender formatting option.
 
 - String: `'female'`
 
-###### `Dictionary`
+###### `LocaleMap`
 
 Provides String mapping for a current language from a language set. The constructor can be seen at [Examples](#examples) on this page.
 
-Dictionary implements the EventTarget interface.
+LocaleMap implements the EventTarget interface.
 
-###### `[object Dictionary] [event localeupdate]`
+###### `[object LocaleMap] [event localeupdate]`
 
-Dispatched when Dictionary.setLocale() is called.
+Dispatched when LocaleMap.setLocale() is called.
 
-###### `[object Dictionary].localeSet`
+###### `[object LocaleMap].localeSet`
 
 Indicates the supported languages.
 
-###### `[object Dictionary].defaultLocale`
+###### `[object LocaleMap].defaultLocale`
 
 Indicates the default language.
 
-###### `[object Dictionary].getLocale()`
+###### `[object LocaleMap].getLocale()`
 
 Returns the current Locale object.
 
-###### `[object Dictionary].setLocale()`
+###### `[object LocaleMap].setLocale()`
 
 Asynchronously sets the current Locale object, loading its assets.
 
-###### `[object Dictionary].loadAssets()`
+###### `[object LocaleMap].loadAssets()`
 
 Asynchronously loads current Locale assets.
 
-###### `[object Dictionary].supportsLocale()`
+###### `[object LocaleMap].supportsLocale()`
 
 Verifies whether the given Locale is supported.
 
-###### `[object Dictionary].t()`
+###### `[object LocaleMap].t()`
 
 Recognizes current Locale asset, applying additional formatting options (`Gender`, `Number`, `BigInt` and `Object` variables).
 
 - Signature: `function(stringId:String, ...options):String`
 
-###### `[object Dictionary].clone()`
+###### `[object LocaleMap].clone()`
 
-Clones the Dictionary. It is recommended to have constructed the original Dictionary with the option `assets.autoClean` set to `false`.
+Clones the LocaleMap. It is recommended to have constructed the original LocaleMap with the option `assets.autoClean` set to `false`.
 
 ```javascript
-var clonedLocaleDictionary = localeDictionary.clone();
+var clonedLocaleLocaleMap = localeLocaleMap.clone();
 ```

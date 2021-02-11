@@ -8,7 +8,7 @@ const { EventTarget, defineEventAttribute } = EventTargetShim;
 
 export { Locale, LocaleDirection, Region };
 
-export class Dictionary extends EventTarget {
+export class LocaleMap extends EventTarget {
     constructor(options = {}) {
         super();
         options.assets = options.assets || {};
@@ -131,7 +131,7 @@ export class Dictionary extends EventTarget {
     }
 
     clone() {
-        let clone = new Dictionary;
+        let clone = new LocaleMap;
         clone._localePathComponents = this._localePathComponents;
         clone._defaultLocale = this._defaultLocale;
         clone._localeSet = this._localeSet;
@@ -179,7 +179,7 @@ export class Dictionary extends EventTarget {
     }
 }
 
-defineEventAttribute(Dictionary.prototype, 'localeupdate');
+defineEventAttribute(LocaleMap.prototype, 'localeupdate');
 
 export class LocaleEvent {
     constructor(type) {
@@ -211,7 +211,7 @@ async function HttpLoader(dictRef, language) {
 }
 
 export default {
-    Dictionary,
+    LocaleMap,
     Gender,
     LoaderType,
     Locale,
