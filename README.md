@@ -14,7 +14,7 @@ Lacking:
 ```javascript
 import Intl from 'com.recoyxgroup.localization';
 
-const localeMap = new Intl.ReplacementMap({
+const localeMap = new Intl.LocaleMap({
     // Set of supported Locales.
     // NOTE that the strings here indicate where
     // the assets are located.
