@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "types": ["node"],
+        "esModuleInterop": true,
+        "downlevelIteration": true,
+        "target": "ES2015",
+        "moduleResolution": "Node",
+        "outFile": "dist/Localization.js"
+    },
+    "exclude": [
+        "./test/",
+        "./dist/"
+    ]
+}
