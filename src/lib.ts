@@ -340,6 +340,33 @@ export class LocaleMap extends EventTarget {
         }
         return typeof r == 'string' ? r : null;
     }
+
+    public reflectOptions(): LocaleMapOptions {
+        let supportedLocales: string[] = [];
+        for (let [, s] of this._localePathComponents)
+            supportedLocales.push(s);
+        let fallbacks: any = {};
+        for (let [from, to] of this._fallbacks)
+            fallbacks[from.toString()] = to.map(v => v.toString());
+        return {
+            defaultLocale: this._defaultLocale.toString(),
+            supportedLocales,
+            fallbacks,
+            assets: {
+                src: this._assetsSrc,
+                baseFileNames: this._assetsBaseFileNames.slice(0),
+                autoClean: this._assetsAutoClean,
+                loaderType: this._assetsLoaderType,
+            },
+        };
+    }
+
+    public clone(): LocaleMap {
+        let r = new LocaleMap(this.reflectOptions());
+        r._assets = this._assets;
+        r._currentLocale = this._currentLocale;
+        return r;
+    }
 }
 
 export interface LocaleMapOptions {
