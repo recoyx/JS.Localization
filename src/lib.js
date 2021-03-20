@@ -327,15 +327,15 @@ export class LocaleMap extends EventTarget {
 }
 
 export class Gender {
-    static MALE = new Gender(constructorPrivateKey);
-    static FEMALE = new Gender(constructorPrivateKey);
-    static OTHER = new Gender(constructorPrivateKey);
-
     constructor(key) {
         if (key != constructorPrivateKey)
             throw new Error("Illegal constructor for Gender.");
     }
 }
+
+Gender.MALE = new Gender(constructorPrivateKey);
+Gender.FEMALE = new Gender(constructorPrivateKey);
+Gender.OTHER = new Gender(constructorPrivateKey);
 
 export class LocaleEvent {
     constructor(type) {
