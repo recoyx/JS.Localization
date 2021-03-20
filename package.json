@@ -1,6 +1,6 @@
 {
   "name": "com.recoyxgroup.localization",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Localization",
   "main": "src/lib.js",
   "scripts": {
