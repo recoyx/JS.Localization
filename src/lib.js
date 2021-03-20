@@ -4,16 +4,14 @@ import LanguageTags from 'language-tags';
 import LanguageNameMap from 'language-name-map';
 import HttpRequest from 'axios';
 import { EventTarget } from 'event-target-shim';
-import fsLoader from './FSLoader4NodeJS';
+import fsLoader from './FSLoader4NodeJS.js';
 
 const { getLangNameFromCode } = LanguageNameMap;
 
-const constructorPrivateKey: any = {};
+const constructorPrivateKey = {};
 
 export class Locale {
-    private _tag: LanguageTags.Tag;
-
-    constructor(id: string, key?: any) {
+    constructor(id, key = undefined) {
         if (key != constructorPrivateKey)
             throw new Error('Illegal constructor for Locale.');
         let tag = LanguageTags(id);
@@ -30,29 +28,29 @@ export class Locale {
         this._tag = tag;
     }
 
-    public get standardTag(): LanguageTags.Tag {
+    get standardTag() {
         return this._tag;
     }
 
-    private _getBasicInfo(): any {
+    _getBasicInfo() {
         return getLangNameFromCode(this._tag.language().format());
     }
 
-    public get direction(): Direction {
+    get direction() {
         let info = this._getBasicInfo();
-        return info.dir == 1 ? Direction.LEFT_TO_RIGHT : Direction.RIGHT_TO_LEFT;
+        return info.dir == 1 ? 'leftToRight' : 'rightToLeft';
     }
 
-    public get internationalName(): string {
+    get internationalName() {
         return this._getBasicInfo().name;
     }
 
-    public get nativeName(): string {
+    get nativeName() {
         let { country } = this;
         return this._getBasicInfo().native + (country ? ` (${ country.getName(this) })` : '');
     }
 
-    public get country(): Country | null {
+    get country() {
         let r = this._tag.region();
         if (r) {
             try {
@@ -68,20 +66,13 @@ export class Locale {
         return null;
     }
 
-    public toString(): string {
+    toString() {
         return this._tag.format();
     }
 }
 
-export enum Direction {
-    LEFT_TO_RIGHT = 'leftToRight',
-    RIGHT_TO_LEFT = 'rightToLeft',
-}
-
 export class Country {
-    private _id: string;
-
-    constructor(id: string, key?: any) {
+    constructor(id, key = undefined) {
         if (key != constructorPrivateKey)
             throw new Error('Illegal constructor for Country.');
         id = id.toUpperCase();
@@ -91,27 +82,22 @@ export class Country {
         this._id = id;
     }
 
-    public get internationalName(): string {
+    get internationalName() {
         return this.getName(parseLocale('en'));
     }
 
-    public getName(locale: Locale): string {
+    getName(locale) {
         return getCountryName(this._id, locale.standardTag.language().format());
     }
 
-    public toString(): string {
+    toString() {
         return this._id;
     }
 }
 
-const localePool: Map<string, Locale> = new Map;
+const localePool = new Map;
 
-/**
- * Parses locale identifier. This method performs object pooling,
- * thus calling it multiple times for the same identifier yields
- * the same object reference.
- */
-export function parseLocale(id: string): Locale | null {
+export function parseLocale(id) {
     try {
         id = new Locale(id, constructorPrivateKey).toString();
         let r = localePool.get(id);
@@ -123,14 +109,9 @@ export function parseLocale(id: string): Locale | null {
     }
 }
 
-const countryPool: Map<string, Country> = new Map;
+const countryPool = new Map;
 
-/**
- * Parses country identifier. This method performs object pooling,
- * thus calling it multiple times for the same identifier yields
- * the same object reference.
- */
-export function parseCountry(id: string): Country | null {
+export function parseCountry(id) {
     try {
         id = new Country(id, constructorPrivateKey).toString();
         let r = countryPool.get(id);
@@ -143,29 +124,18 @@ export function parseCountry(id: string): Country | null {
 }
 
 export class LocaleMap extends EventTarget {
-    private _currentLocale?: Locale;
-    private _localePathComponents: Map<Locale, string>;
-    private _supportedLocales: Set<Locale>;
-    private _defaultLocale?: Locale;
-    private _fallbacks: Map<Locale, Locale[]>;
-    private _assets: Map<Locale, any> = new Map;
-    private _assetsSrc: string;
-    private _assetsBaseFileNames: string[];
-    private _assetsAutoClean: boolean;
-    private _assetsLoaderType: LocaleMapLoaderType;
-
-    constructor(options: LocaleMapOptions) {
+    constructor(options) {
         super();
-        let localePathComponents: Map<Locale, string> = new Map;
-        let supportedLocales: Set<Locale> = new Set;
+        let localePathComponents = new Map;
+        let supportedLocales = new Set;
         for (let code of options.supportedLocales) {
             let localeParse = parseLocale(code);
             localePathComponents.set(localeParse, code);
             supportedLocales.add(localeParse);
         }
-        let fallbacks: Map<Locale, Locale[]> = new Map;
+        let fallbacks = new Map;
         for (let [k, v] of Object.entries(options.fallbacks || {})) {
-            let arrayV = v instanceof Array ? v as any[] : [v];
+            let arrayV = v instanceof Array ? v : [v];
             fallbacks.set(parseLocale(k), arrayV.map(e => parseLocale(e)));
         }
         this._localePathComponents = localePathComponents;
@@ -178,39 +148,29 @@ export class LocaleMap extends EventTarget {
         this._assetsLoaderType = options.assets.loaderType;
     }
 
-    /**
-     * Returns a set of supported locales. This method reflects the locales
-     * that were supplied to the `LocaleMap` constructor.
-     */
-    public get supportedLocales(): Set<Locale> {
-        let r: Set<Locale> = new Set;
+    get supportedLocales() {
+        let r = new Set;
         for (let locale of this._supportedLocales) r.add(locale);
         return r;
     }
 
-    /**
-     * Returns `true` if the specified locale is supported.
-     */
-    public supportsLocale(arg: Locale): boolean {
+    supportsLocale(arg) {
         return this._supportedLocales.has(arg);
     }
 
-    /**
-     * Returns the currently loaded locale.
-     */
-    public get currentLocale(): Locale | null {
+    get currentLocale() {
         return this._currentLocale;
     }
 
-    public async load(newLocale: Locale | null = null): Promise<boolean> {
+    async load(newLocale = null) {
         if (!newLocale) newLocale = this._defaultLocale;
         if (!this.supportsLocale(newLocale))
             throw new Error(`Unsupported locale: ${newLocale.toString()}`);
-        let toLoad: Set<Locale> = new Set;
+        let toLoad = new Set;
         toLoad.add(newLocale);
         this._enumerateFallbacks(newLocale, toLoad);
 
-        let newAssets: Map<Locale, any> = new Map;
+        let newAssets = new Map;
         for (let locale of toLoad) {
             let res = await this._loadSingleLocale(locale);
             if (!res) {
@@ -230,14 +190,14 @@ export class LocaleMap extends EventTarget {
         return true;
     }
 
-    private async _loadSingleLocale(locale: Locale): Promise<any> {
-        let r: any = {};
+    async _loadSingleLocale(locale) {
+        let r = {};
         let localePathComp = this._localePathComponents.get(locale);
         if (!localePathComp)
             throw new Error(`Fallback locale is not a supported locale: ${locale.toString()}`);
         for (let baseName of this._assetsBaseFileNames) {
             let resPath = `${this._assetsSrc}/${localePathComp}/${baseName}.json`;
-            let content: string = '';
+            let content = '';
             try {
                 if (this._assetsLoaderType == 'fileSystem') {
                     content = await fsLoader(resPath);
@@ -257,7 +217,7 @@ export class LocaleMap extends EventTarget {
         return r;
     }
 
-    private _setResourceDeep(name: string, assign: any, output: any) {
+    _setResourceDeep(name, assign, output) {
         let names = name.split('/');
         let lastName = names.pop();
         for (let name of names) {
@@ -269,7 +229,7 @@ export class LocaleMap extends EventTarget {
         output[lastName] = assign;
     }
 
-    private _enumerateFallbacks(locale: Locale, output: Set<Locale>) {
+    _enumerateFallbacks(locale, output) {
         let list = this._fallbacks.get(locale);
         if (!list)
             return;
@@ -278,13 +238,10 @@ export class LocaleMap extends EventTarget {
             this._enumerateFallbacks(item, output);
     }
 
-    /**
-     * Retrieves message by identifier with formatting options.
-     */
-    public get(id: string, ...options: (number | Gender | Object)[]): string {
-        let vars: any = null;
-        let gender: Gender | null = null;
-        let amountNumber: number | null = null;
+    get(id, ...options) {
+        let vars = null;
+        let gender = null;
+        let amountNumber = null;
 
         for (let option of options) {
             if (option instanceof Gender) gender = option;
@@ -307,7 +264,7 @@ export class LocaleMap extends EventTarget {
         return r === null ? id : r;
     }
 
-    private _getWithLocale(locale: Locale, id: string[], vars: any): string | null {
+    _getWithLocale(locale, id, vars) {
         let message = this._resolveId(this._assets.get(locale), id);
         if (message != null)
             return this._applyMessage(message, vars);
@@ -323,7 +280,7 @@ export class LocaleMap extends EventTarget {
         return null;
     }
 
-    private _applyMessage(message: string, vars: any): string {
+    _applyMessage(message, vars) {
         return message.replace(/\$(\$|[A-Za-z0-9_-]+)/g, (_, s) => {
             if (s == '$')
                 return '$';
@@ -331,7 +288,7 @@ export class LocaleMap extends EventTarget {
         });
     }
 
-    private _resolveId(root: any, id: string[]): string | null {
+    _resolveId(root, id) {
         let r = root;
         for (let frag of id) {
             if (r === undefined || r === null || r.constructor != Object)
@@ -341,11 +298,11 @@ export class LocaleMap extends EventTarget {
         return typeof r == 'string' ? r : null;
     }
 
-    public reflectOptions(): LocaleMapOptions {
-        let supportedLocales: string[] = [];
+    reflectOptions() {
+        let supportedLocales = [];
         for (let [, s] of this._localePathComponents)
             supportedLocales.push(s);
-        let fallbacks: any = {};
+        let fallbacks = {};
         for (let [from, to] of this._fallbacks)
             fallbacks[from.toString()] = to.map(v => v.toString());
         return {
@@ -361,7 +318,7 @@ export class LocaleMap extends EventTarget {
         };
     }
 
-    public clone(): LocaleMap {
+    clone() {
         let r = new LocaleMap(this.reflectOptions());
         r._assets = this._assets;
         r._currentLocale = this._currentLocale;
@@ -369,37 +326,19 @@ export class LocaleMap extends EventTarget {
     }
 }
 
-export interface LocaleMapOptions {
-    supportedLocales: string[];
-    defaultLocale: string;
-    fallbacks?: any;
-    assets: LocaleMapAssetsOptions;
-}
-
-export interface LocaleMapAssetsOptions {
-    src: string;
-    baseFileNames: string[];
-    autoClean?: boolean;
-    loaderType: LocaleMapLoaderType;
-}
-
-export type LocaleMapLoaderType = 'http' | 'fileSystem';
-
 export class Gender {
-    public static MALE: Gender = new Gender(constructorPrivateKey);
-    public static FEMALE: Gender = new Gender(constructorPrivateKey);
-    public static OTHER: Gender = new Gender(constructorPrivateKey);
+    static MALE = new Gender(constructorPrivateKey);
+    static FEMALE = new Gender(constructorPrivateKey);
+    static OTHER = new Gender(constructorPrivateKey);
 
-    constructor(key?: any) {
+    constructor(key) {
         if (key != constructorPrivateKey)
             throw new Error("Illegal constructor for Gender.");
     }
 }
 
 export class LocaleEvent {
-    public readonly type: string;
-
-    constructor(type: string) {
+    constructor(type) {
         this.type = type;
     }
 }

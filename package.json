@@ -1,8 +1,8 @@
 {
   "name": "com.recoyxgroup.localization",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Localization",
-  "main": "src/lib.ts",
+  "main": "src/lib.js",
   "scripts": {
     "test": "mocha -r ts-node/register 'test/**/*.ts'"
   },
@@ -17,6 +17,7 @@
   "author": "Klaider",
   "repository": "https://github.com/recoyx/Localization-js",
   "license": "ISC",
+  "typings": "./src/lib.d.ts",
   "dependencies": {
     "axios": "^0.21.0",
     "country-iso-2-to-3": "^1.1.0",
@@ -26,7 +27,7 @@
     "language-tags": "^1.0.5"
   },
   "browser": {
-    "src/FSLoader4NodeJS.ts": "src/FSLoader4Browser.ts"
+    "src/FSLoader4NodeJS.js": "src/FSLoader4Browser.js"
   },
   "devDependencies": {
     "@types/chai": "^4.2.15",
